@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
-const axiosInstance = axios.create({ baseURL: 'http://207.180.230.78:8000' });
+const axiosInstance = axios.create({ baseURL: 'http://207.180.230.78:8086/Api' });
 
 axiosInstance.interceptors.response.use(
   (response) => response,

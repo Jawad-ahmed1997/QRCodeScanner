@@ -1,13 +1,35 @@
 {
   "expo": {
-    "name": "BarcodeScanner",
-    "slug": "BarcodeScanner",
+    "name": "ITM BarCode Scanner.",
+    "slug": "ITMBarCode",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/applicationicon.jpg",
     "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access camera."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true,
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33,
+            "minSdkVersion": 23
+          },
+          "ios": {
+            "deploymentTarget": "13.0"
+          }
+        }
+      ]
+    ],
     "splash": {
-      "image": "./assets/gracesuperMart.png",
+      "image": "./assets/splashscreen.png",
       "resizeMode": "center",
       "backgroundColor": "#ffffff"
     },
@@ -15,21 +37,28 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.BarcodeScanner.BarcodeScanner"
+      "package": "com.BarcodeScanner.BarcodeScanner",
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "e2b275d9-db7f-49ad-a288-6e6308ce3b07"
+        "projectId": "837e1499-b38c-4e55-a66d-ba470f4a3efd"
       }
     }
   }

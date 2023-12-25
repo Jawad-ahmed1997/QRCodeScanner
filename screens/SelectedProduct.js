@@ -1,157 +1,200 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet,Image,ActivityIndicator } from "react-native";
-import { getProductByBarcode, getProductById } from "../api";
-import { Icon } from 'react-native-elements'
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+  ScrollView,
+  Alert,
+} from "react-native";
+import { getProductByBarcode } from "../api";
 
-
-
-const SelectedProduct = ({ route, navigation }) => {
-  const [product, setProduct] = useState({})
-  const [isLoader,setIsloader]=useState(false);
-  const { id, screen } = route.params;
+const SelectedProduct = ({ route }) => {
+  const [product, setProduct] = useState(null);
+  const [isLoader, setIsLoader] = useState(false);
+  const { id } = route.params;
 
   useEffect(() => {
     const fetchProductByBarcode = async (id) => {
-      setIsloader(true);
-      const { status, data } = await getProductByBarcode(id);
-      if (status === 200) {
-        setProduct(data);
-        setIsloader(false)
+      setIsLoader(true);
+      try {
+        const { status, data } = await getProductByBarcode(id);
+        if (status === 200) {
+          setProduct(data);
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoader(false);
       }
     };
-    const fetchProductById = async (id) => {
-      setIsloader(true);
-      const { status, data } = await getProductById(id);
-      if (status === 200) {
-        setProduct(data);
-        setIsloader(false)
-      }
-    };
-
-    if (screen === "scan")
-      fetchProductByBarcode(id)
-    else if (screen === "search")
-      fetchProductById(id)
-
-  }, [id])
-
-
-  useEffect(()=>{
-console.log(product)
-  },[product])
-
-  
+    fetchProductByBarcode(id);
+  }, [id]);
 
   return (
     <>
-    {isLoader?<ActivityIndicator style={styles.ActivityIndicator} size="large" color="#00ff00" />:
-    <View style={styles.container}>
-      <View style={styles.logo}>
-      <Image 
-      style={styles.image}
-        source={require('../assets/gracesuperMart.png')}
+      {isLoader ? (
+        <ActivityIndicator
+          style={styles.activityIndicator}
+          size="large"
+          color="red"
         />
-      </View> 
-      
-      <View style={styles.containerChild}>
-        <Text style={styles.Title}>Item Name</Text>
-        <Text style={ styles.detail}>{product.item_name}</Text>
-      </View>
-      <View style={styles.containerChild}>
-        <Text style={styles.Title}>Retail Price</Text>
-      <Text style={ styles.detail}>PKR/- {product.trade_price}</Text>
-      </View>
-      <View style={styles.containerChild}>
-        <Text style={styles.Title} >Sales Price</Text>
-        <Text style={ styles.detail}>PKR/- {product.trade_price}</Text>
-      </View>
-      <View style={styles.containerChild}>
-        <Text style={styles.Title} >Company Name</Text>
-        <Text style={ styles.detail}>{product.cmp_name}</Text>
-      </View>
-      {/* <View style={styles.containerChild}>
-        <Text style={styles.Title} >Sales Price</Text>
-        <Text style={ styles.detail}>PKR/- {product.cmp_name}</Text>
-      </View> */}
-   
-    </View>
-    }
+      ) : (
+        <ScrollView style={styles.container}>
+          {!product ? (
+            <View style={{justifyContent:'center',alignItems:'center',gap:50,marginTop:100}}>
+              <Image
+                style={styles.image}
+                source={require("../assets/gracesuperMart.png")}
+                resizeMode="contain"
+              />
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: 20,
+                }}
+              >
+                No product found!
+              </Text>
+            </View>
+          ) : (
+            <>
+              <View style={styles.imageContainer}>
+                <Image
+                  style={styles.image}
+                  source={
+                    product?.imagePath
+                      ? { uri: product?.imagePath }
+                      : require("../assets/gracesuperMart.png")
+                  }
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={styles.headingContainer}>
+                <Text style={styles.productName}>{product?.itemName}</Text>
+                <Text style={styles.categoryName}>{product?.category}</Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: product?.isStockAvailable ? "lightgreen" : "red",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {product?.IsStockAvailable ? "In Stock." : "Out Of Stock."}
+                </Text>
+              </View>
+              <View style={styles.infoContainer}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    gap: 20,
+                    alignItems: "center",
+                  }}
+                >
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailTitle}>Item ID:</Text>
+                    <Text style={styles.detail}>{product?.itemID}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailTitle}>Company:</Text>
+                    <Text style={styles.detail}>{product?.company}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailTitle}>Retail Price:</Text>
+                    <Text style={styles.detail}>Rs.{product?.retailPrice}</Text>
+                  </View>
+
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailTitle}>Sales Price:</Text>
+                    <Text style={styles.detail}> Rs.{product?.salePrice}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailTitle}>Discount:</Text>
+                    <Text style={styles.detail}>{product?.discount}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailTitle}>Packing:</Text>
+                    <Text style={styles.detail}>{product?.packing}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailTitle}>Barcode:</Text>
+                    <Text style={styles.detail}>{product?.barcode}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.detailTitle}>Client ID:</Text>
+                    <Text style={styles.detail}>{product?.clientID}</Text>
+                  </View>
+                </View>
+              </View>
+            </>
+          )}
+        </ScrollView>
+      )}
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  ActivityIndicator:{
-    height:"100%",
-    width:"100%",
-    justifyContent:"center",
-    display:"flex",
-    alignItems:"center"
+  activityIndicator: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  Title: {
-    fontSize: 14,
-    marginLeft:20,
-    fontWeight:"bold",
-    fontStyle:"italic"
-  },
-  // image:{
-  //   height:100,
-  //   width:100
-  // },
   container: {
-    position:'relative',
-    flex:1,
-    justifyContent:"center",
-    alignItems:'flex-start',
-    height:"100%",
-    width:"100%",
-    backgroundColor: '#fff',
-    // marginTop:10
+    flex: 1,
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
-  flatlist: {
-    fontSize: 18,
-    paddingTop: 10,
-    paddingLeft: 10,
-    backgroundColor: "#f5f5f5"
+  imageContainer: {
+    alignItems: "center",
+    marginBottom: 20,
   },
-  containerChild:{
-    display:'flex',
-    justifyContent:'center',
-    alignItems:"flex-start",
-    flexDirection:"column",
-    marginLeft:20,
-    height:"13%",
-    width:"100%"
+  image: {
+    width: 200,
+    height: 200,
+    resizeMode: "contain",
+    borderRadius: 10,
   },
-  logo:{
-    display:'flex',
-    justifyContent:'flex-start',
-    alignItems:"center", 
-    // width:"100%",
-    // height:"20%",
-    position: 'absolute',
-    top: 40,
-    left: 0,
-    right: 0,
-    marginBottom:20
+
+  headingContainer: {},
+  infoContainer: {
+    backgroundColor: "white",
+    paddingTop: 20,
+    paddingBottom: 50,
   },
-  detail:{
-    // backgroundColor:"#f5f5f5",
-    borderWidth: 1,
-    color:"#808080",
-    borderColor:"#f5f5f5",
-    fontSize:18,
-    margin:10,
-    padding:10,
-    borderRadius:10,
-    fontStyle:"italic"  
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 15,
+    color: "#333",
   },
-  // detailView:{
-  //   display:'flex',
-  //   justifyContent:"center",
-  //   alignItems:"flex-St",
-  //   height:"80%"
-  // }
+  detailRow: {
+    marginBottom: 5,
+  },
+  detailTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginRight: 10,
+    width: 130,
+    color: "#555",
+  },
+  detail: {
+    fontSize: 16,
+    color: "#687076",
+  },
+  productName: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  categoryName: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: "#687076",
+  },
 });
 
 export default SelectedProduct;

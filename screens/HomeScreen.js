@@ -1,91 +1,195 @@
-import React from 'react';
-import { Button, Image,View ,TouchableOpacity,Text,StyleSheet} from 'react-native';
-// import { Icon } from 'react-native-elements'
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Image,
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+} from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { BarCodeScanner } from "expo-barcode-scanner";
 
 function HomeScreen({ navigation }) {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [scanned, setScanned] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
+
+  useEffect(() => {
+    const getBarCodeScannerPermissions = async () => {
+      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      setHasPermission(status === "granted");
+    };
+    getBarCodeScannerPermissions();
+  }, []);
+
+  const handleBarCodeScanned = ({ data }) => {
+    setScanned(false);
+    navigation.navigate("SelectedProduct", { id: data, screen: "scan" });
+  };
+
+  const handlePress = () => {
+    setScanned(false);
+    setCameraOpen(!cameraOpen);
+  };
+
+  const onGoBack = () => {
+    setScanned(false);
+    setCameraOpen(false);
+
+  };
+
+  if (hasPermission === null) {
+    return null;
+  }
+
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
   return (
     <View style={styles.container}>
-       <View style={styles.logo}>
-      <Image  source={require('../assets/gracesuperMart.png')}
-        />
-      </View> 
-    
-      <TouchableOpacity style={styles.formButton}  
-        onPress={() => navigation.navigate('QrCodeScaner')}
-      >
-         <Icon name="barcode" size={30} color="#900"  />
-      <Text style={styles.formButtonText}>Scan Product</Text>
-      </TouchableOpacity>
-
-        <TouchableOpacity style={styles.formButton}
-        onPress={() => navigation.navigate('MySearchBar')}
-      >
-       <Icon name="search" size={30} color="#900" />
-      <Text style={styles.formButtonText}>Serach Product</Text>
-      </TouchableOpacity>
-      <View style={styles.powerdBy}>
-        <Text style={styles.CmpName} >Powerd By IT MECHANIX</Text>
+      <View style={{ flexDirection: "row",justifyContent:'space-between',flexWrap:'wrap' }}>
+        <View style={styles.logo}>
+          <Image
+            source={require("../assets/itmlogo.jpg")}
+            style={{ height: 50 }}
+            resizeMode="contain"
+          />
+        </View>
+        <View style={styles.logo}>
+          <Image
+            source={require("../assets/gracesuperMart.png")}
+            style={{ height: 50 }}
+            resizeMode="contain"
+          />
+        </View>
       </View>
+      {cameraOpen ? (
+        <View
+          style={{
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "black",
+          }}
+        >
+          <BarCodeScanner
+            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+            ratio="16:9"
+            style={StyleSheet.absoluteFillObject}
+          >
+            <Image
+              style={styles.ScanerArea}
+              source={require("../assets/Group4039.png")}
+            />
+
+          </BarCodeScanner>
+
+          <TouchableOpacity style={styles.backBtn}  onPress={onGoBack}>
+              <Text style={styles.backBtnText}>Go Back</Text>
+            </TouchableOpacity>
+        </View>
+      ) : (
+        <>
+          <View style={styles.formButtonContainer}>
+            <TouchableOpacity style={styles.formButton} onPress={handlePress}>
+              <Icon name="barcode" size={30} color="#900" />
+              <Text style={styles.formButtonText}>Tab To Scan.</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.powerdBy}>
+            <Text style={styles.CmpName}>Powerd By IT MECHANIX</Text>
+          </View>
+        </>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 80,
+    backgroundColor: "white",
+  },
+  powerdBy: {
+    marginBottom: 20,
+  },
+  logo: {
+    alignItems: "center",
+    marginBottom: 20,
+    marginTop: 20,
+  },
+  formButtonContainer: {
+    gap: 20,
+  },
+  formInput: {
+    height: 40,
+    width: "80%",
+    borderColor: "gray",
+    borderWidth: 1,
+    marginTop: 8,
+    borderRadius: 10,
+    paddingLeft: 10,
+  },
+  formButton: {
+    alignItems: "center",
+    justifyContent: "flex-start",
+    flexDirection: "row",
+    borderRadius: 10,
+    padding: 20,
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  formButtonText: {
+    color: "#000000",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginLeft: 20,
+  },
+  ScanerArea: {
+    position: "absolute",
+    top: 0,
+    left: 7,
+    resizeMode: "contain",
+    height: "90%",
+    width: "90%",
+    margin: 10,
+  },
+  backBtn: {
+    position: "absolute",
+    bottom: 70,
+    left: "38%",
+    zIndex:200
+  },
+  backBtnText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+  },
 
-    container: {
-      position:'relative',
-        height: "100%",
-        width:"100%",
-        display:'flex',
-        justifyContent:'center',
-        alignItems:'center'
-      },  powerdBy:{
-        display:'flex',
-        justifyContent:'flex-start',
-        alignItems:"center", 
-        // width:"100%",
-        // height:"20%",
-        position: 'absolute',
-        
-        left: 0,
-        right: 0,
-        bottom:40,
-        marginBottom:20
-      },
-      logo:{
-        display:'flex',
-        justifyContent:'flex-start',
-        alignItems:"center", 
-        // width:"100%",
-        // height:"20%",
-        position: 'absolute',
-        top: 150,
-        left: 0,
-        right: 0,
-        marginBottom:20
-      },
-    formInput: {
-      height: 40,
-       width: '80%', 
-      borderColor: 'gray', borderWidth: 1, marginTop: 8, borderRadius: 10, paddingLeft: 10
-    },
-    formButton: {
-      alignItems: 'center', 
-      justifyContent: 'flex-start',
-      display:'flex',
-      flexDirection:'row',
-       height: 60,
-       paddingLeft:10, 
-      width: '55%',
-       borderColor: 'gray',
-       borderWidth: 1,
-       marginTop: 8, 
-      borderRadius: 10,
-      backgroundColor: '#DDDDDD',
-    },
-    formButtonText: { color: '#000000',fontSize:18, fontWeight: 'bold' ,marginLeft:20}
-  });
-  
+  headingQrCodeScan:{
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 30,
+    textAlign: "center",
+    marginTop: 40,
+    position: "absolute",
+    left: "20%",
+  }
+});
 
 export default HomeScreen;
