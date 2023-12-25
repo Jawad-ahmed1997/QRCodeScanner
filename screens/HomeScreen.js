@@ -25,7 +25,7 @@ function HomeScreen({ navigation }) {
 
   const handleBarCodeScanned = ({ data }) => {
     setScanned(false);
-    navigation.navigate("SelectedProduct", { id: data, screen: "scan" });
+    navigation.navigate("Product", { id: data, screen: "scan" });
   };
 
   const handlePress = () => {
@@ -59,7 +59,7 @@ function HomeScreen({ navigation }) {
         </View>
         <View style={styles.logo}>
           <Image
-            source={require("../assets/gracesuperMart.png")}
+            source={require("../assets/gracesupermart.png")}
             style={{ height: 50 }}
             resizeMode="contain"
           />
@@ -89,7 +89,7 @@ function HomeScreen({ navigation }) {
           </BarCodeScanner>
 
           <TouchableOpacity style={styles.backBtn}  onPress={onGoBack}>
-              <Text style={styles.backBtnText}>Go Back</Text>
+              <Text style={styles.backBtnText}>Back</Text>
             </TouchableOpacity>
         </View>
       ) : (
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   backBtn: {
     position: "absolute",
     bottom: 70,
-    left: "38%",
+    left: "45%",
     zIndex:200
   },
   backBtnText: {

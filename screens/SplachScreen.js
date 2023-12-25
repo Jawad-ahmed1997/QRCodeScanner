@@ -17,7 +17,7 @@ const AnimatedSplashScreen = () => {
     return (
       <View style={styles.container}>
         <Animated.Image
-          source={require('../assets/gracesuperMart.png')}
+          source={require('../assets/gracesupermart.png')}
           style={[styles.image, { opacity: fadeAnim }]}
         />
       </View>

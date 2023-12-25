@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ITM BarCode Scanner.",
+    "name": "ITM BarCode Scanner",
     "slug": "ITMBarCode",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,10 +17,7 @@
         "expo-build-properties",
         {
           "android": {
-            "usesCleartextTraffic": true,
-            "compileSdkVersion": 33,
-            "targetSdkVersion": 33,
-            "minSdkVersion": 23
+            "usesCleartextTraffic": true
           },
           "ios": {
             "deploymentTarget": "13.0"
