@@ -88,11 +88,11 @@ const SelectedProduct = ({ navigation,route }) => {
                 <Text
                   style={{
                     fontSize: 12,
-                    color: product?.isStockAvailable ? "lightgreen" : "red",
+                    color: "lightgreen" ,
                     fontWeight: "bold",
                   }}
                 >
-                  {product?.IsStockAvailable ? "In Stock." : "Out Of Stock."}
+                  {"In Stock."}
                 </Text>
 
                 <Text

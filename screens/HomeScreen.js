@@ -14,6 +14,7 @@ function HomeScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
+  const [type,setType] = useState('back')
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -79,6 +80,7 @@ function HomeScreen({ navigation }) {
           <BarCodeScanner
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
             ratio="16:9"
+            type={type}
             style={StyleSheet.absoluteFillObject}
           >
             <Image
@@ -90,6 +92,9 @@ function HomeScreen({ navigation }) {
 
           <TouchableOpacity style={styles.backBtn}  onPress={onGoBack}>
               <Text style={styles.backBtnText}>Back</Text>
+            </TouchableOpacity>
+          <TouchableOpacity style={[styles.backBtn,{top:50}]}  onPress={()=>setType(type=="front"?"back":"front")}>
+              <Text style={styles.backBtnText}>Switch to {type=="front"?"Back":"Front"} Camera</Text>
             </TouchableOpacity>
         </View>
       ) : (
@@ -171,7 +176,7 @@ const styles = StyleSheet.create({
   backBtn: {
     position: "absolute",
     bottom: 70,
-    left: "45%",
+    left: "25%",
     zIndex:200
   },
   backBtnText: {
